@@ -3,9 +3,10 @@ param(
     [switch]$NoPause
 )
 
-# Removes .NET compile caches (obj) and build outputs (bin), plus the local
-# Publish folder created by Publish-All.ps1. Archives are kept unless
-# -IncludeArchives is passed.
+# Removes .NET compile caches (obj) and build outputs (bin), and clears the
+# local Publish folder created by Publish-All.ps1 while keeping the folder
+# itself. Archives are kept unless -IncludeArchives is passed, in which case
+# their contents are cleared and the folder is kept as well.
 
 . (Join-Path $PSScriptRoot "_Common.ps1")
 
@@ -33,23 +34,40 @@ function Remove-Directories {
     }
 }
 
-function Remove-Folder {
+function Clear-Folder {
     param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$Label
+        [Parameter(Mandatory = $true)][string]$Path
     )
 
     if (-not (Test-Path -LiteralPath $Path)) {
-        Write-Host "$Label not found, nothing to clean."
+        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        Write-Host "  created empty: $Path"
         return
     }
 
-    try {
-        Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
-        Write-Host "  removed: $Path"
+    $items = @(Get-ChildItem -LiteralPath $Path -Force -ErrorAction SilentlyContinue)
+    if ($items.Count -eq 0) {
+        Write-Host "  already empty: $Path"
+        return
     }
-    catch {
-        Write-Warn "  could not remove: $Path"
+
+    $failedItems = 0
+    foreach ($item in $items) {
+        try {
+            Remove-Item -LiteralPath $item.FullName -Recurse -Force -ErrorAction Stop
+            Write-Host "  removed: $($item.FullName)"
+        }
+        catch {
+            Write-Warn "  could not remove: $($item.FullName)"
+            $failedItems++
+        }
+    }
+
+    if ($failedItems -gt 0) {
+        Write-Warn "  kept folder, but $failedItems item(s) could not be removed: $Path"
+    }
+    else {
+        Write-Host "  kept empty folder: $Path"
     }
 }
 
@@ -63,15 +81,15 @@ try {
     Write-Host "Removing build outputs (bin)..."
     Remove-Directories -Root $ProjectRoot -Filter "bin" -Label "bin"
 
-    Write-Host "Removing publish output..."
-    Remove-Folder -Path (Join-Path $ProjectRoot "Publish") -Label "Publish"
+    Write-Host "Clearing publish output (Publish folder is kept)..."
+    Clear-Folder -Path (Join-Path $ProjectRoot "Publish")
 
     if ($IncludeArchives) {
-        Write-Host "Removing archives..."
-        Remove-Folder -Path (Join-Path $ProjectRoot "Archives") -Label "Archives"
+        Write-Host "Clearing archives (Archives folder is kept)..."
+        Clear-Folder -Path (Join-Path $ProjectRoot "Archives")
     }
     else {
-        Write-Host "Archives kept (pass -IncludeArchives to remove them)."
+        Write-Host "Archives kept (pass -IncludeArchives to clear them)."
     }
 
     Write-Ok ""

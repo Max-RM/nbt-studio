@@ -60,7 +60,7 @@ scripts\Publish-All.ps1 -SelfContained
 scripts\Package-All.ps1
 ```
 
-Framework-dependent builds are written to `Publish\NbtStudio_<rid>`. Self-contained builds are written to `Publish\NbtStudio_SelfContained_<rid>`. Supported targets are `win-x64`, `win-x86`, and `win-arm64`. `Package-All.ps1` creates `Archives\NbtStudio-<rid>.zip` and `Archives\NbtStudio-SelfContained-<rid>.zip` for each published target; pass `-SkipSelfContained` to package only the framework-dependent builds. `scripts\Clean-BuildOutput.ps1` removes `bin`, `obj`, and `Publish` (`-IncludeArchives` also removes `Archives`).
+Framework-dependent builds are written to `Publish\NbtStudio_<rid>`. Self-contained builds are written to `Publish\NbtStudio_SelfContained_<rid>`. Supported targets are `win-x64`, `win-x86`, and `win-arm64`. `Package-All.ps1` creates `Archives\NbtStudio-<rid>.zip` and `Archives\NbtStudio-SelfContained-<rid>.zip` for each published target; pass `-SkipSelfContained` to package only the framework-dependent builds. `scripts\Clean-BuildOutput.ps1` removes `bin` and `obj`, and clears `Publish` while keeping the folder itself (`-IncludeArchives` clears `Archives` the same way).
 
 Double-clickable `.cmd` launchers are provided next to the scripts, and per-architecture wrappers such as `scripts\Publish-win-arm64.cmd` publish a single target.
 
