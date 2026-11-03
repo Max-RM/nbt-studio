@@ -22,6 +22,9 @@ namespace NbtStudio
             { typeof(NbtFileNode), ("file", "files") },
             { typeof(ChunkNode), ("chunk", "chunks") },
             { typeof(RegionFileNode), ("region file", "region files") },
+            { typeof(ConstructionFileNode), ("construction file", "construction files") },
+            { typeof(ConstructionMetadataNode), ("construction metadata", "construction metadata") },
+            { typeof(ConstructionSectionNode), ("construction section", "construction sections") },
             { typeof(FolderNode), ("folder", "folders") }
         };
 
@@ -78,6 +81,12 @@ namespace NbtStudio
                 return tag.Tag as T;
             if (node is RegionFileNode region)
                 return region.Region as T;
+            if (node is ConstructionFileNode construction_file)
+                return construction_file.File as T;
+            if (node is ConstructionMetadataNode construction_metadata)
+                return construction_metadata.Metadata as T;
+            if (node is ConstructionSectionNode construction_section)
+                return construction_section.Section as T;
             return null;
         }
 
@@ -91,6 +100,10 @@ namespace NbtStudio
                 return file.File.RootTag;
             if (node is ChunkNode chunk)
                 return chunk.Chunk.Data;
+            if (node is ConstructionMetadataNode construction_metadata)
+                return construction_metadata.Metadata.Data;
+            if (node is ConstructionSectionNode construction_section)
+                return construction_section.AccessSectionData();
             return null;
         }
     }

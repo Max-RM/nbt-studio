@@ -63,6 +63,12 @@ namespace NbtStudio.UI
                 return IconSource.GetImage(IconType.Region).Image;
             if (node is ChunkNode)
                 return IconSource.GetImage(IconType.Chunk).Image;
+            if (node is ConstructionFileNode)
+                return IconSource.GetImage(IconType.File).Image;
+            if (node is ConstructionMetadataNode)
+                return IconSource.GetImage(IconType.CompoundTag).Image;
+            if (node is ConstructionSectionNode)
+                return IconSource.GetImage(IconType.Chunk).Image;
             if (node is NbtTagNode tag)
                 return NbtUtil.TagTypeImage(IconSource, tag.Tag.TagType).Image;
             return null;
@@ -171,6 +177,12 @@ namespace NbtStudio.UI
                 var world = coords.WorldChunk(chunk.Chunk);
                 return $"{text} in world at ({world.x}, {world.z})";
             }
+            if (node is ConstructionFileNode construction_file)
+                return Path.GetFileName(construction_file.File.Path);
+            if (node is ConstructionMetadataNode)
+                return "Metadata";
+            if (node is ConstructionSectionNode construction_section)
+                return $"Section [{construction_section.Section.X}, {construction_section.Section.Y}, {construction_section.Section.Z}]";
             if (node is NbtTagNode tag)
                 return Snbt.GetName(tag.Tag, SnbtOptions.Preview);
             return null;
@@ -204,6 +216,20 @@ namespace NbtStudio.UI
                     return "(saved externally)";
                 else
                     return "(open to load)";
+            }
+            if (node is ConstructionFileNode construction_file)
+                return $"[{StringUtils.Pluralize(construction_file.File.Sections.Count, "section")}]";
+            if (node is ConstructionMetadataNode construction_metadata)
+                return NbtUtil.PreviewNbtValue(construction_metadata.Metadata.Data);
+            if (node is ConstructionSectionNode construction_section)
+            {
+                var section = construction_section.Section;
+                if (section.IsCorrupt)
+                    return "(corrupt)";
+                else if (!section.IsLoaded)
+                    return "(open to load)";
+                else
+                    return $"{NbtUtil.PreviewNbtValue(section.Data)} in a {section.SizeX}x{section.SizeY}x{section.SizeZ} volume";
             }
             if (node is NbtTagNode tag)
                 return NbtUtil.PreviewNbtValue(tag.Tag);

@@ -95,7 +95,10 @@ namespace NbtStudio
             var attempt2 = RegionFile.TryCreate(path);
             if (!attempt2.Failed)
                 return attempt2;
-            return FailableFactory.Aggregate<IFile>(attempt1, attempt2);
+            var attempt3 = ConstructionFile.TryCreate(path);
+            if (!attempt3.Failed)
+                return attempt3;
+            return FailableFactory.Aggregate<IFile>(attempt1, attempt2, attempt3);
         }
 
         public static IFailable<IHavePath> OpenFileOrFolder(string path)

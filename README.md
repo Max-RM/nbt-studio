@@ -9,6 +9,7 @@ NBT Studio supports reading and writing the following NBT formats. Features mark
 
 * Java NBT files, such as `level.dat`
 * Java region files (`.mca` and `.mcr`)
+* ☆ Amulet [construction](https://github.com/Amulet-Team/construction-specification/blob/master/specifications/version_0/readme.md) files (`.construction`, spec v0)
 * ☆ Bedrock NBT files, such as `.mcstructure` files (little-endian NBT)
 * ☆ SNBT files (stringified NBT, like in commands: `{Enchantments:[{id:sharpness,lvl:10s}]}`)
 
@@ -38,6 +39,30 @@ NBT Studio adds an assortment of convenience features to make navigating and edi
 * <img src="NbtStudio/Resources/amber/action_save.png" width=16> Right-click on a file to see options to save it, or open it in File Explorer
 * <img src="NbtStudio/Resources/amber/tag_compound.png" width=16> Right-click on a container tag to see options to add a child tag
 * <img src="NbtStudio/Resources/amber/file_file.png" width=16> Files display an asterisk (`*`) to indicate there are unsaved changes
+
+## Building and publishing
+
+The solution requires the .NET 6 SDK or newer and the Windows Desktop / Windows Forms components. The repository uses git submodules, so clone it recursively or initialize them manually:
+
+```text
+git clone --recursive https://github.com/Max-RM/nbt-studio.git
+cd nbt-studio
+git submodule update --init --recursive
+dotnet build NbtStudio.sln -c Release
+```
+
+The repository includes PowerShell scripts for publishing:
+
+```text
+scripts\Publish-All.ps1
+scripts\Publish-All.ps1 -Rids win-x64
+scripts\Publish-All.ps1 -SelfContained
+scripts\Package-All.ps1
+```
+
+Framework-dependent builds are written to `Publish\NbtStudio_<rid>`. Self-contained builds are written to `Publish\NbtStudio_SelfContained_<rid>`. Supported targets are `win-x64`, `win-x86`, and `win-arm64`. `Package-All.ps1` creates `Archives\NbtStudio-<rid>.zip` and `Archives\NbtStudio-SelfContained-<rid>.zip` for each published target; pass `-SkipSelfContained` to package only the framework-dependent builds. `scripts\Clean-BuildOutput.ps1` removes `bin`, `obj`, and `Publish` (`-IncludeArchives` also removes `Archives`).
+
+Double-clickable `.cmd` launchers are provided next to the scripts, and per-architecture wrappers such as `scripts\Publish-win-arm64.cmd` publish a single target.
 
 # Credits
 This application was written from scratch by myself, tryashtar. However, it would never have existed without these amazing projects that came before me:

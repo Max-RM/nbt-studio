@@ -50,6 +50,9 @@ namespace NbtStudio
             Register<NbtFile>((tree, parent, file) => new NbtFileNode(tree, parent, file));
             Register<RegionFile>((tree, parent, region) => new RegionFileNode(tree, parent, region));
             Register<Chunk>((tree, parent, chunk) => new ChunkNode(tree, parent, chunk));
+            Register<ConstructionFile>((tree, parent, file) => new ConstructionFileNode(tree, parent, file));
+            Register<ConstructionMetadata>((tree, parent, metadata) => new ConstructionMetadataNode(tree, parent, metadata));
+            Register<ConstructionSection>((tree, parent, section) => new ConstructionSectionNode(tree, parent, section));
             Register<NbtFolder>((tree, parent, folder) => new FolderNode(tree, parent, folder));
         }
 

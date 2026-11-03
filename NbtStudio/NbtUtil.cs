@@ -501,6 +501,14 @@ namespace NbtStudio
             return $"chunk at ({chunk.X}, {chunk.Z}) in '{Path.GetFileName(chunk.Region.Path)}'";
         }
 
+        public static string ConstructionSectionDescription(ConstructionSection section)
+        {
+            string text = $"section at ({section.X}, {section.Y}, {section.Z})";
+            if (section.File?.Path is not null)
+                return $"{text} in '{Path.GetFileName(section.File.Path)}'";
+            return text;
+        }
+
         private class FileExtension
         {
             public readonly string Extension;
@@ -522,6 +530,7 @@ namespace NbtStudio
             { new FileExtension("mca", "Anvil Region files", NbtFileType.Region) },
             { new FileExtension("mcr", "Legacy Region files", NbtFileType.Region) },
             { new FileExtension("mcc", "External Chunk files", NbtFileType.Chunk) },
+            { new FileExtension("construction", "Construction files", NbtFileType.Construction) },
             { new FileExtension("mcstructure", "Bedrock Structure files", NbtFileType.BinaryNbt) },
             { new FileExtension("json", "JSON files", NbtFileType.Snbt) },
             { new FileExtension("schematic", "MCEdit Schematic files", NbtFileType.BinaryNbt) }
@@ -566,6 +575,8 @@ namespace NbtStudio
                 return NbtFileType.Chunk;
             else if (saveable is RegionFile)
                 return NbtFileType.Region;
+            else if (saveable is ConstructionFile)
+                return NbtFileType.Construction;
             else
                 return NbtFileType.BinaryNbt;
         }
@@ -575,7 +586,8 @@ namespace NbtStudio
             Snbt,
             BinaryNbt,
             Region,
-            Chunk
+            Chunk,
+            Construction
         }
 
         public static IconType TagIconType(NbtTagType type)
